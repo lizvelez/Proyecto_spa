@@ -18,10 +18,25 @@ Funcionalidades actuales (Entrega 1)
 - Mostrar citas
 - Cancelar cita
 
- Próximas mejoras (Entrega 2)
-- Implementación de concurrencia con Threads
-- Sincronización usando lock
-- Simulación de múltiples usuarios
+ Funcionalidades actuales (Entrega 2)
+
+Concurrencia:
+Se implemento concurrencia mediante el uso de hilos (Threads), simulando varios usuarios intentando registrar citas al mismo tiempo.
+
+Esto permite evidenciar problemas de acceso concurrente a la memoria compartida.
+
+Sincronización:
+Se implementó sincronización utilizando lock para proteger la lista compartida de citas:
+
+lock (bloqueo)
+{
+    citas.Add(nueva);
+}
+
+Esto evita:
+Duplicación de horarios
+Inconsistencias en los datos
+Errores por acceso simultáneo
   
 Cómo ejecutar el proyecto:
 1. Descargar el repositorio.
