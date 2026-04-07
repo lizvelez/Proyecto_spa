@@ -1,11 +1,18 @@
+
+JERONIMO MEJIA BENITEZ <jeronimo.mejia480@pascualbravo.edu.co>
+7:24 (hace 14 minutos)
+para mí
+
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace SpaApp
 {
     class Program
     {
         static List<Cita> citas = new List<Cita>();
+        static object bloqueo = new object();
 
         static void Main(string[] args)
         {
@@ -18,14 +25,15 @@ namespace SpaApp
                 Console.WriteLine("1. Registrar cita");
                 Console.WriteLine("2. Ver citas");
                 Console.WriteLine("3. Cancelar cita");
-                Console.WriteLine("4. Salir");
+                Console.WriteLine("4. Simular concurrencia");
+                Console.WriteLine("5. Salir");
                 Console.Write("Seleccione una opción: ");
                 opcion = int.Parse(Console.ReadLine());
 
                 switch (opcion)
                 {
                     case 1:
-                        RegistrarCita();
+                        RegistrarCitaManual();
                         break;
                     case 2:
                         MostrarCitas();
@@ -33,45 +41,49 @@ namespace SpaApp
                     case 3:
                         CancelarCita();
                         break;
+                    case 4:
+                        SimularConcurrencia();
+                        break;
                 }
 
                 Console.WriteLine("\nPresione una tecla para continuar...");
                 Console.ReadKey();
 
-            } while (opcion != 4);
+            } while (opcion != 5);
         }
-
-        static void RegistrarCita()
+        static void RegistrarCitaManual()
         {
             Console.Clear();
+
             Cita nueva = new Cita();
 
             Console.Write("Nombre del cliente: ");
             nueva.NombreCliente = Console.ReadLine();
 
-            Console.Write("Servicio (Masaje / Facial / Manicure): ");
+            Console.Write("Servicio: ");
             nueva.Servicio = Console.ReadLine();
 
-            Console.Write("Fecha (dd/mm/aaaa): ");
+            Console.Write("Fecha: ");
             nueva.Fecha = Console.ReadLine();
 
-            Console.Write("Hora (ej: 10:00 AM): ");
+            Console.Write("Hora: ");
             nueva.Hora = Console.ReadLine();
 
-          
-            foreach (var c in citas)
+            lock (bloqueo)
             {
-                if (c.Fecha == nueva.Fecha && c.Hora == nueva.Hora)
+                foreach (var c in citas)
                 {
-                    Console.WriteLine("\n Ese horario ya está ocupado.");
-                    return;
+                    if (c.Fecha == nueva.Fecha && c.Hora == nueva.Hora)
+                    {
+                        Console.WriteLine("⚠ Ese horario ya está ocupado.");
+                        return;
+                    }
                 }
+
+                citas.Add(nueva);
+                Console.WriteLine("✅ Cita registrada correctamente.");
             }
-
-            citas.Add(nueva);
-            Console.WriteLine("\n Cita registrada con éxito.");
         }
-
         static void MostrarCitas()
         {
             Console.Clear();
@@ -82,8 +94,6 @@ namespace SpaApp
                 return;
             }
 
-            Console.WriteLine("===== LISTA DE CITAS =====");
-
             int i = 1;
             foreach (var c in citas)
             {
@@ -92,11 +102,10 @@ namespace SpaApp
                 Console.WriteLine($"Servicio: {c.Servicio}");
                 Console.WriteLine($"Fecha: {c.Fecha}");
                 Console.WriteLine($"Hora: {c.Hora}");
-                Console.WriteLine("----------------------------");
+                Console.WriteLine("-----------------------");
                 i++;
             }
         }
-
         static void CancelarCita()
         {
             Console.Clear();
@@ -109,16 +118,65 @@ namespace SpaApp
 
             MostrarCitas();
             Console.Write("\nIngrese el número de la cita a cancelar: ");
-            int numero = int.Parse(Console.ReadLine());
+            int num = int.Parse(Console.ReadLine());
 
-            if (numero > 0 && numero <= citas.Count)
+            lock (bloqueo)
             {
-                citas.RemoveAt(numero - 1);
-                Console.WriteLine("Cita cancelada correctamente.");
+                if (num > 0 && num <= citas.Count)
+                {
+                    citas.RemoveAt(num - 1);
+                    Console.WriteLine("Cita cancelada.");
+                }
+                else
+                {
+                    Console.WriteLine("Número inválido.");
+                }
             }
-            else
+        }
+        static void SimularConcurrencia()
+        {
+            Console.Clear();
+            Console.WriteLine("Simulando múltiples usuarios...\n");
+
+            Thread t1 = new Thread(() => SimularCita("Ana", "10:00"));
+            Thread t2 = new Thread(() => SimularCita("Juan", "10:00"));
+            Thread t3 = new Thread(() => SimularCita("Luis", "11:00"));
+
+            t1.Start();
+            t2.Start();
+            t3.Start();
+
+            t1.Join();
+            t2.Join();
+            t3.Join();
+
+            Console.WriteLine("\nSimulación finalizada.");
+        }
+        static void SimularCita(string cliente, string hora)
+        {
+            Thread.Sleep(100); // simula retraso
+
+            Cita nueva = new Cita
             {
-                Console.WriteLine("Número inválido.");
+                NombreCliente = cliente,
+                Servicio = "Masaje",
+                Fecha = "01/04/2026",
+                Hora = hora
+            };
+
+            lock (bloqueo)
+            {
+                foreach (var c in citas)
+                {
+                    if (c.Fecha == nueva.Fecha && c.Hora == nueva.Hora)
+                    {
+                        Console.WriteLine($"Hilo {Thread.CurrentThread.ManagedThreadId}: {cliente} intentó {hora} (rechazado)");
+                        return;
+                    }
+                }
+
+                citas.Add(nueva);
+                Console.WriteLine($"Hilo {Thread.CurrentThread.ManagedThreadId}: {cliente} registró {hora}");
             }
         }
     }
