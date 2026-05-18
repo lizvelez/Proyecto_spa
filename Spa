@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Diagnostics;
 
 namespace SpaApp
 {
@@ -12,6 +13,8 @@ namespace SpaApp
         static void Main(string[] args)
         {
             int opcion;
+            Process proceso = Process.GetCurrentProcess();
+            Stopwatch reloj = new Stopwatch();
 
             do
             {
@@ -131,19 +134,36 @@ namespace SpaApp
         static void SimularConcurrencia()
         {
             Console.Clear();
-            Console.WriteLine("Simulando múltiples usuarios...\n");
+            Console.WriteLine("===== SIMULACIÓN CONCURRENTE =====\n");
+
+            Stopwatch reloj = new Stopwatch();
+
+            long memoriaAntes = GC.GetTotalMemory(true);
+
+            reloj.Start();
 
             Thread t1 = new Thread(() => SimularCita("Ana", "10:00"));
             Thread t2 = new Thread(() => SimularCita("Juan", "10:00"));
             Thread t3 = new Thread(() => SimularCita("Luis", "11:00"));
+            Thread t4 = new Thread(() => SimularCita("Carlos", "12:00"));
 
             t1.Start();
             t2.Start();
             t3.Start();
+            t4.Start();
 
             t1.Join();
             t2.Join();
             t3.Join();
+            t4.Join();
+
+            reloj.Stop();
+
+            long memoriaDespues = GC.GetTotalMemory(false);
+
+            Console.WriteLine("\n===== MONITOREO =====");
+            Console.WriteLine($"Tiempo de ejecución: {reloj.ElapsedMilliseconds} ms");
+            Console.WriteLine($"Memoria usada: {(memoriaDespues - memoriaAntes)} bytes");
 
             Console.WriteLine("\nSimulación finalizada.");
         }
