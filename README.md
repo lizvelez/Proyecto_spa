@@ -1,58 +1,91 @@
-# Proyecto_spa
-Sistema de Gestión de Citas para Spa
+ Sistema de Gestión de Citas para Spa
 
-Descripción
-Aplicación desarrollada en C# consola que permite gestionar las citas de un spa, incluyendo registro, consulta y cancelación de citas con validación de horarios.
+# Descripción del proyecto
 
-Objetivo
-Organizar la gestión de citas del spa evitando conflictos de horario y permitiendo una administración básica de clientes y servicios.
+Este proyecto consiste en una aplicación de consola desarrollada en C# para la gestión de citas de un spa.  
+El sistema permite registrar, visualizar y cancelar citas, además de simular múltiples usuarios accediendo al sistema al mismo tiempo mediante concurrencia.
 
-Tecnologías utilizadas
+El proyecto fue desarrollado progresivamente en tres entregas, integrando conceptos fundamentales de Sistemas Operativos como:
+
+- Concurrencia
+- Hilos (Threads)
+- Sincronización
+- Sección crítica
+- Memoria compartida
+- Monitoreo de recursos
+
+# Objetivo
+
+Desarrollar un sistema que permita gestionar citas de un spa evitando conflictos de horario y aplicando conceptos de sistemas operativos para controlar accesos concurrentes a recursos compartidos.
+
+# Tecnologías utilizadas
+
 - Lenguaje: C#
-- Tipo de aplicación: Consola
-- Estructuras utilizadas: List<T>
+- Plataforma: .NET
+- Aplicación de consola
+- Thread
+- lock
+- List<T
+- Stopwatch
+- `GC.GetTotalMemory()
 
-Funcionalidades actuales (Entrega 1)
-- Registrar cita
-- Validar horario repetido
+# Evolución del proyecto
+
+# Entrega 1 – Sistema base
+
+En la primera entrega se desarrolló la estructura principal del sistema.
+
+# Funcionalidades implementadas
+
+- Registrar citas
 - Mostrar citas
-- Cancelar cita
+- Cancelar citas
+- Validación de horarios repetidos
+- Menú interactivo
 
- Funcionalidades actuales (Entrega 2)
+# Entrega 2 – Concurrencia y sincronización
 
-Concurrencia:
-Se implemento concurrencia mediante el uso de hilos (Threads), simulando varios usuarios intentando registrar citas al mismo tiempo.
+En la segunda entrega se implementó concurrencia real mediante múltiples hilos.
 
-Esto permite evidenciar problemas de acceso concurrente a la memoria compartida.
+# Características agregadas
 
-Sincronización:
-Se implementó sincronización utilizando lock para proteger la lista compartida de citas:
+- Uso de Threads
+- Simulación de múltiples usuarios
+- Sincronización con lock
+- Protección de memoria compartida
+- Validación concurrente de horarios
 
-lock (bloqueo)
-{
-    citas.Add(nueva);
-}
+# Problema técnico resuelto
 
-Esto evita:
-Duplicación de horarios
-Inconsistencias en los datos
-Errores por acceso simultáneo
-  
-Cómo ejecutar el proyecto:
-1. Descargar el repositorio.
-2. Abrir el proyecto en Visual Studio.
-3. Ejecutar el programa.
-4. En la consola aparece el menú del sistema:
+Múltiples usuarios podían intentar registrar citas al mismo tiempo, generando conflictos sobre la lista compartida de citas.
 
-===== SISTEMA SPA =====
-1.Registrar cita
-2.Ver citas
-3.Cancelar cita
-4.Salir
+La solución implementada fue el uso de sincronización mediante lock.
 
-5. Seleccionar una opción ingresando el número correcto.
-   
+# Entrega 3 – Sistema completo
+
+En la entrega final se integraron conceptos avanzados de sistemas operativos y monitoreo de recursos.
+
+# Mejoras finales
+
+- Monitoreo de tiempo de ejecución
+- Medición de uso de memoria
+- Organización modular del código
+- Explicación técnica de concurrencia
+- Evidencia funcional del sistema
+
+# Conceptos de Sistemas Operativos aplicados
+
+# Threads (Hilos)
+
+El sistema utiliza múltiples hilos para simular usuarios accediendo al sistema al mismo tiempo.
+
+Ejemplo:
+
+csharp
+Thread t1 = new Thread(() => SimularCita("Ana", "10:00"));
+
+
 Autores:
-Manuela Rodriguez
-Lizeth Velez
-Jeronimo Mejia
+- Manuela Rodriguez
+- Lizeth Velez
+- Jeronimo Mejia
